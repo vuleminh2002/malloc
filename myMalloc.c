@@ -295,8 +295,7 @@ static inline header * allocate_object(size_t raw_size) {
     return NULL;
   }
   size_t required_size = require_block_size(raw_size);
-  printf("require_size: %zu\n", 
-                   required_size);
+  
   int ind = ((required_size-ALLOC_HEADER_SIZE)/8)-1;
   int idx = get_idx_freelist(ind);
           
@@ -339,8 +338,7 @@ static inline header * allocate_object(size_t raw_size) {
   if(block!= NULL){
     //if the block size is equal the required size
       size_t block_size = get_size(block);
-printf("blocksize: %zu\n", 
-                 block_size);
+
     if(required_size == block_size || block_size - required_size < sizeof(header)){
       set_state(block, ALLOCATED);
       block->next->prev = block->prev;
@@ -351,8 +349,7 @@ printf("blocksize: %zu\n",
      if (block_size > required_size) {
       // Update the current block's size
       set_size(block, block_size - required_size);
-      printf("size_statsse: %zu\n", 
-                   block->size_state);
+      
                    
       // Create a new header for the allocated block
       char *new_pointer = (char *)block + get_size(block);
@@ -375,6 +372,7 @@ printf("blocksize: %zu\n",
         block->prev->next = block->next;
 
       insert_block(block);
+      return allocated_block->data;
       }
   }
 }
