@@ -49,6 +49,17 @@ size_t numOsChunks = 0;
  */
 static void init (void) __attribute__ ((constructor));
 
+//Extra helper function
+//find the require block size for allocating a block
+size_t require_block_size(size_t raw_size);
+//find the index on the freelist array
+int get_idx_freelist(int ind);
+//find an appropriate block
+header * get_appropriate_block(header * sentinal, size_t require_size);
+//allocate a new chunk and coalesing
+header * allocate_new_chunk(size_t size);
+//function to insert a block into a free list.
+void insert_block(header * block);
 // Helper functions for manipulating pointers to headers
 static inline header * get_header_from_offset(void * ptr, ptrdiff_t off);
 static inline header * get_left_header(header * h);
@@ -178,6 +189,99 @@ static header * allocate_chunk(size_t size) {
   return hdr;
 }
 
+void insert_block(header * block){
+  int idx = get_idx_freelist((get_size(block)-ALLOC_HEADER_SIZE/8)-1);
+  header * sentinal = &freelistSentinels[idx];
+  //if the list is empty
+  if(sentinal->next = sentinal){
+    sentinal->next = block;
+    sentinal->prev = block;
+    block->prev = sentinal;
+    block->next = sentinal; 
+  }else{
+    sentinal->next->prev = block;
+    block->next = sentinal->next;
+    block->prev = sentinal;
+    sentinal->next = block;
+
+  }
+  
+}
+static header * allocate_new_chunk(size_t size){
+  header *new_chunk = allocate_chunk(size);
+    if (new_chunk == NULL) {
+        return NULL; // Allocation failed
+    }
+    header * left_fencepost = get_header_from_offset(new_chunk, -ALLOC_HEADER_SIZE);
+    header * right_fencepost = get_header_from_offset(new_chunk, sizeof(new_chunk));
+    header * last_fencepost = get_header_from_offset(left_fencepost, -ALLOC_HEADER_SIZE);
+
+    //check if two chunks are adjacent
+    if(last_fencepost == lastFencePost){
+      //case 1 if the previous block is unallocated
+      header * leftHeader = get_left_header(lastFencePost);
+      if(get_state(leftHeader) == UNALLOCATED){
+        size_t newSize = get_size(leftHeader) + get_size(new_chunk) + 2* ALLOC_HEADER_SIZE;
+        set_size(leftHeader, newSize);
+        set_state(leftHeader, UNALLOCATED);
+        right_fencepost->left_size = newSize;
+        //dropping the block
+        leftHeader->next->prev = leftHeader->prev;
+        leftHeader->prev->next = leftHeader->next;
+        //readd it
+        insert_block(leftHeader);
+        lastFencePost = right_fencepost;
+        return leftHeader;
+
+      }
+      if(get_state(leftHeader) == ALLOCATED){
+        //case 2 if the previous block is allocated
+        header * newHeader = last_fencepost;
+        size_t newSize = get_size(new_chunk) + (2 * ALLOC_HEADER_SIZE);
+        set_size(newHeader, newSize);
+        set_state(newHeader, UNALLOCATED);
+        right_fencepost->left_size = newSize;
+        insert_block(newHeader);
+        lastFencePost = right_fencepost;
+        return newHeader;
+      }
+    }
+    else{
+         insert_freelist(new_chunk);
+          lastFencePost = right_fencepost;
+          return new_chunk;
+
+    }
+
+    
+}
+
+static size_t require_block_size(size_t raw_size) {
+  size_t size = ((raw_size + 7+ ALLOC_HEADER_SIZE)/8)*8;
+  if (size > sizeof(header)){
+    return size;
+  }
+  return sizeof(header);
+}
+
+static int get_idx_freelist(int ind){
+  if (ind >= N_LISTS - 1){
+    return N_LISTS - 1;
+  }
+  return ind;
+}
+
+static header * get_appropriate_block(header * sentinal, size_t required_size){
+  header * current = sentinal->next;
+  while(current != sentinal){
+    if(get_size(current) >= required_size){
+      return current;
+    }
+    current = current->next;
+  }
+  return NULL;
+}
+
 /**
  * @brief Helper allocate an object given a raw request size from the user
  *
@@ -187,9 +291,81 @@ static header * allocate_chunk(size_t size) {
  */
 static inline header * allocate_object(size_t raw_size) {
   // TODO implement allocation
-  (void) raw_size;
-  assert(false);
-  exit(1);
+  if (raw_size == 0){
+    return NULL;
+  }
+  size_t required_size = require_block_size(raw_size);
+  int ind = ((required_size-ALLOC_HEADER_SIZE)/8)-1;
+  int idx = get_idx_freelist(ind);
+  
+  header * block = NULL;
+  //step 2: find appropriate free list
+  for(int i = idx; i < N_LISTS; i++){
+    header * sentinal = &freelistSentinels[i];
+    //if the final list
+    if (i == N_LISTS - 1){
+      for (header *cur = sentinal->next; cur != sentinal; cur = cur->next) {
+        if (get_size(cur) >= required_size) {
+            block = cur;
+              break;
+        }
+      }
+    }
+    if(sentinal->next != sentinal){
+      block = get_appropriate_block(sentinal ,required_size);
+      if(block != NULL){
+        break;
+      }
+    }
+  }
+  //allocate a new chunk if block is null
+  if(block == NULL){
+    while(allocate_new_chunk(ARENA_SIZE) == NULL){
+      allocate_new_chunk(ARENA_SIZE);
+    }
+       return allocate_object(raw_size);
+  }
+
+  //step 3: allocating
+  if(block!= NULL){
+    //if the block size is equal the required size
+      size_t block_size = get_size(block);
+
+    if(required_size == block_size || block_size - required_size < sizeof(header)){
+      set_state(block, ALLOCATED);
+      block->next->prev = block->prev;
+      block->prev->next = block->next;
+      return (header*)block->data;
+    }
+     // Case 2: Block is larger and needs to be split
+     if (block_size > required_size) {
+      // Update the current block's size
+      set_size(block, block_size - required_size);
+
+      // Create a new header for the allocated block
+      char *new_pointer = (char *)block + get_size(block);
+      header *allocated_block = (header *)new_pointer;
+
+      // Initialize the new block's metadata
+      set_size(allocated_block, required_size);
+      allocated_block->left_size = get_size(block);
+      set_state(allocated_block, ALLOCATED);
+
+      // Update the right neighbor's left_size
+      char *right_pointer = (char *)allocated_block + get_size(allocated_block);
+      header *right_header = (header *)right_pointer;
+      right_header->left_size = get_size(allocated_block);
+
+      // Reinsert the remaining block into the appropriate freelist
+      int new_listidx = get_idx_freelist((get_size(block) - ALLOC_HEADER_SIZE) / 8 - 1);
+      if (new_listidx != idx) {
+        block->next->prev = block->prev;
+        block->prev->next = block->next;
+
+        insert_freelist(block);
+      }
+  }
+}
 }
 
 /**
