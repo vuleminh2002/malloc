@@ -401,12 +401,33 @@ static inline header * allocate_object(size_t raw_size) {
 static inline header * ptr_to_header(void * p) {
   return (header *)((char *) p - ALLOC_HEADER_SIZE); //sizeof(header));
 }
-
+/**
+ * determine if the block is in the final freelist
+ */
+static inline bool final_freelist(header * header){
+  return get_size(header) >= (N_LISTS+2)*sizeof(size_t);
+}
 /**
  * @brief Helper to manage deallocation of a pointer returned by the user
  *
  * @param p The pointer returned to the user by a call to malloc
  */
+
+/**
+ * helper function to remove a block from the freelist
+ */
+static inline void remove_from_freelist(header * hdr) {
+  int idx = (get_size(hdr)-ALLOC_HEADER_SIZE)/sizeof(size_t)-1;
+  idx = idx > (N_LISTS-1)? N_LISTS-1 : idx;
+
+  header * sentinal = &freelistSentinels[idx];
+  for (header * cur = sentinal->next; cur != sentinal; cur = cur->next) {
+    if (cur == hdr) {
+      cur->prev->next = cur->next;
+      cur->next->prev = cur->prev; 
+    }
+  }
+}
 static inline void deallocate_object(void * p) {
   // TODO implement deallocation
   if (p == NULL) {
@@ -420,30 +441,52 @@ static inline void deallocate_object(void * p) {
     header *left_neighbor = get_left_header(hdr);
     header *right_neighbor = get_right_header(hdr);
 
-    // Case 1: Neither neighbor is free
-    if (get_state(left_neighbor) == ALLOCATED && get_state(right_neighbor) == ALLOCATED) {
-      printf("Assertion Failed!\n");
-        set_state(hdr, UNALLOCATED);
-        insert_block(hdr);
+    bool left_unallocated = false;
+    bool right_unallocated = false;
+    if(get_state(left_neighbor) == UNALLOCATED){
+      left_unallocated = true;
+    }
+    if(get_state(right_neighbor) == UNALLOCATED){
+      right_unallocated = true;
+    }
+    //case 1: both left and right are unallocated.
+    if(left_unallocated && right_unallocated){
+      size_t newSize = get_size(left_neighbor) + get_size(right_neighbor) +get_size(hdr);
+      if(!final_freelist(left_neighbor)){
+        remove_from_freelist(left_neighbor);
+      }
+      set_size(left_neighbor, newSize);
+      hdr = left_neighbor;
+      get_right_header(right_neighbor)->left_size = newSize;
+      remove_from_freelist(right_neighbor);
+    }
+    //case 2:only the left block is unallocated
+    else if(left_unallocated && !right_unallocated ){
+      size_t newSize = get_size(left_neighbor) + get_size(hdr);
+      if(!final_freelist(left_neighbor)){
+        remove_from_freelist(left_neighbor);
+      }
+      set_size(left_neighbor, newSize);
+      get_right_header(hdr)->left_size = newSize;
+      hdr = left_neighbor;
+    }//case 3: coalesce with the right neighbor only
+    else if (!left_unallocated && right_unallocated){
+      size_t newSize = get_size(hdr) + get_size(right_neighbor);
+      if(!final_freelist(hdr)){
+        remove_from_freelist(hdr);
+      }
+      set_size(hdr, newSize);
+      get_right_header(right_neighbor)->left_size = newSize;
+    }
+    int idx = get_idx_freelist((get_size(hdr) - ALLOC_HEADER_SIZE) / 8 - 1);
+    if (idx >= N_LISTS - 1) {
+        // If block belongs in the final free list, leave it as is
+        return;
+    } else {
+        // Reinsert the block into the appropriate free list
+        insert_into_freelist(hdr);
     }
     
-    // Case 3: Only the left neighbor is free
-    else if (get_state(left_neighbor) == UNALLOCATED && get_state(right_neighbor) == ALLOCATED) {
-        int new_list_idx = get_idx_freelist((get_size(hdr) - ALLOC_HEADER_SIZE) / 8 - 1);
-        if (new_list_idx == N_LISTS - 1) {
-        // No coalescing; just insert the block directly
-          set_size(left_neighbor, get_size(hdr) + get_size(left_neighbor));
-        }
-        else{
-          set_state(hdr, UNALLOCATED);
-          set_size(left_neighbor, get_size(hdr) + get_size(left_neighbor));
-          left_neighbor->next->prev = left_neighbor->prev;
-          left_neighbor->prev->next = left_neighbor->next;
-          insert_block(left_neighbor);
-        }
-       
-    }
-    // Case 4: Both neighbors are free
    
 }
 
