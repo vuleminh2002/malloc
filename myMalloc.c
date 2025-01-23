@@ -57,7 +57,7 @@ int get_idx_freelist(int ind);
 //find an appropriate block
 header * get_appropriate_block(header * sentinal, size_t require_size);
 //allocate a new chunk and coalesing
-header * allocate_new_chunk(size_t size);
+static header * allocate_new_chunk(size_t size);
 //function to insert a block into a free list.
 void insert_block(header * block);
 // Helper functions for manipulating pointers to headers
