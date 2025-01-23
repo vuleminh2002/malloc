@@ -179,6 +179,7 @@ inline static void insert_fenceposts(void * raw_mem, size_t size) {
  * first fencpost)
  */
 static header * allocate_chunk(size_t size) {
+    printf("%s\n", "huhu\n");
   void * mem = sbrk(size);
   
   insert_fenceposts(mem, size);
@@ -355,7 +356,7 @@ static inline header * allocate_object(size_t raw_size) {
       block->prev->next = block->next;
       return (header*)block->data;
     }
-      printf("%s\n", "hello");
+      
      // Case 2: Block is larger and needs to be split
      if (block_size > required_size) {
       // Update the current block's size
