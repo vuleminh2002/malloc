@@ -366,7 +366,7 @@ static inline header * allocate_object(size_t raw_size) {
       
      // Case 2: Block is larger and needs to be split
      if (block_size > required_size) {
-      printf("dmm\n")
+      printf("dmm\n");
       // Update the current block's size
       set_size(block, block_size - required_size);
       
