@@ -179,7 +179,7 @@ inline static void insert_fenceposts(void * raw_mem, size_t size) {
  * first fencpost)
  */
 static header * allocate_chunk(size_t size) {
-  printf("%s\n", "hello\n");
+  //printf("%s\n", "hello\n");
   void * mem = sbrk(size);
   insert_fenceposts(mem, size);
   header * hdr = (header *) ((char *)mem + ALLOC_HEADER_SIZE);
@@ -198,7 +198,7 @@ void insert_block(header * block){
     // Get the sentinel node for the corresponding free list
     header *sentinel = &freelistSentinels[idx];
 
-    // Insert the block at the beginning of the free list
+    // Insert the block at the beginning of the free list(empty list)
     if (sentinel->next == sentinel) {
         // Free list is empty
         sentinel->next = block;
@@ -256,6 +256,7 @@ static header * allocate_new_chunk(size_t size){
         return newHeader;
       }
     }
+    //two chunks are not adjacent
     else{
       //printf("size of new chunk%zu\n", new_chunk->size_state);
           insert_block(new_chunk);
@@ -319,7 +320,6 @@ static inline header * allocate_object(size_t raw_size) {
     header * sentinal = &freelistSentinels[i];
     //if the final list
     if (i == N_LISTS - 1){
-            
       for (header *cur = sentinal->next; cur != sentinal; cur = cur->next) {
         if (get_size(cur) >= required_size) {
             block = cur;
@@ -327,6 +327,7 @@ static inline header * allocate_object(size_t raw_size) {
         }
       }
     }
+    //if not the final list 
     if(sentinal->next != sentinal){
       block = get_appropriate_block(sentinal ,required_size);
       if(block != NULL){
