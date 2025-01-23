@@ -212,6 +212,7 @@ void insert_block(header * block){
         sentinel->next->prev = block;
         sentinel->next = block;
     }
+    print_pointer(block);
   }
   
 static header * allocate_new_chunk(size_t size){
