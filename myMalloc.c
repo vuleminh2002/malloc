@@ -218,18 +218,16 @@ void insert_block(header * block){
 static header * allocate_new_chunk(size_t size){
   header *new_chunk = allocate_chunk(size);
     if (new_chunk == NULL) {
-      printf("failed allocation\n");
+      
         errno = ENOMEM;
-        perror("Memory allocation failed");
+
         return NULL; // Allocation failed
     }
     header * left_fencepost = get_header_from_offset(new_chunk, -ALLOC_HEADER_SIZE);
     header * right_fencepost = get_header_from_offset(new_chunk, sizeof(new_chunk));
     header * last_fencepost = get_header_from_offset(left_fencepost, -ALLOC_HEADER_SIZE);
-    printf("allocate new chunk\n");
     //check if two chunks are adjacent
     if(last_fencepost == lastFencePost){
-      printf(" ajacent chunks\n");
       //case 1 if the previous block is unallocated
       header * leftHeader = get_left_header(lastFencePost);
       if(get_state(leftHeader) == UNALLOCATED){
@@ -237,7 +235,6 @@ static header * allocate_new_chunk(size_t size){
         size_t newSize = get_size(leftHeader) + get_size(new_chunk) + 2* ALLOC_HEADER_SIZE;
         set_size(leftHeader, newSize);
         set_state(leftHeader, UNALLOCATED);
-        printf(" here\n");
         right_fencepost->left_size = newSize;
         
         //dropping the block
@@ -345,13 +342,15 @@ static inline header * allocate_object(size_t raw_size) {
   //allocate a new chunk if block is null
   if (block == NULL) {
     header * newChunk = allocate_new_chunk(ARENA_SIZE);
+    print_pointer(newChunk);
     if(newChunk!=NULL){
-      allocate_object(raw_size); 
-    }else{
-      block = NULL;
-      return NULL;
+      //printf("here\n");
+      allocate_object(raw_size);  
     }
-     
+    else{
+      return;
+    }
+    
   }
 
 
