@@ -217,6 +217,7 @@ void insert_block(header * block){
   
 static header * allocate_new_chunk(size_t size){
   header *new_chunk = allocate_chunk(size);
+  print_pointer(new_chunk);
     if (new_chunk == NULL) {
         return NULL; // Allocation failed
     }
@@ -336,7 +337,7 @@ static inline header * allocate_object(size_t raw_size) {
   //allocate a new chunk if block is null
   if (block == NULL) {
     header * newChunk = allocate_new_chunk(ARENA_SIZE);
-    print_pointer(newChunk);
+    //print_pointer(newChunk);
     while(newChunk==NULL){
       newChunk = allocate_new_chunk(ARENA_SIZE);
     }
