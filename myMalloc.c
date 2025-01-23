@@ -372,8 +372,9 @@ static inline header * allocate_object(size_t raw_size) {
         block->prev->next = block->next;
 
       insert_block(block);
-      return allocated_block->data;
+      
       }
+      return (header*)allocated_block->data;
   }
 }
 }
