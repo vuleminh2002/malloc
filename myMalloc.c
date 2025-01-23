@@ -307,7 +307,6 @@ static inline header * allocate_object(size_t raw_size) {
             
       for (header *cur = sentinal->next; cur != sentinal; cur = cur->next) {
         if (get_size(cur) >= required_size) {
-          
             block = cur;
               break;
         }
@@ -322,7 +321,7 @@ static inline header * allocate_object(size_t raw_size) {
   }
   //allocate a new chunk if block is null
   if (block == NULL) {
-            //fprintf(stderr, "Memory allocation failed\n");
+      fprintf(stderr, "ditme\n");
 
     if (allocate_new_chunk(ARENA_SIZE) == NULL) {
         //fprintf(stderr, "Memory allocation failed\n");
