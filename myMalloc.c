@@ -324,9 +324,9 @@ static inline header * allocate_object(size_t raw_size) {
       
 
     if (allocate_new_chunk(ARENA_SIZE) == NULL) {
-        fprintf(stderr, "ditme\n");
         exit(ENOMEM);
     }
+    fprintf(stderr, "ditme\n");
     return allocate_object(raw_size);
 }
 
