@@ -440,7 +440,6 @@ static inline void deallocate_object(void * p) {
     //check for double free
 	if (get_state(hdr) == UNALLOCATED) {
 		printf("Double Free Detected\n");
-		//printf("Assertion Failed!\n");
 		assert(false);
 		exit(1);
 	}
