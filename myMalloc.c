@@ -319,12 +319,14 @@ static inline header * allocate_object(size_t raw_size) {
     }
   }
   //allocate a new chunk if block is null
-  if(block == NULL){
-    while(allocate_new_chunk(ARENA_SIZE) == NULL){
-      allocate_new_chunk(ARENA_SIZE);
+  if (block == NULL) {
+    if (allocate_new_chunk(ARENA_SIZE) == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(ENOMEM);
     }
-       return allocate_object(raw_size);
-  }
+    return allocate_object(raw_size);
+}
+
 
   //step 3: allocating
   if(block!= NULL){
@@ -386,9 +388,55 @@ static inline header * ptr_to_header(void * p) {
  */
 static inline void deallocate_object(void * p) {
   // TODO implement deallocation
-  (void) p;
-  assert(false);
-  exit(1);
+  if (p == NULL) {
+        // Freeing a NULL pointer is a no-op
+        return;
+    }
+
+    // Get the header of the block being freed
+    header *current_block = ptr_to_header(p);
+    set_state(current_block, UNALLOCATED);
+
+    // Get the left and right neighbors
+    header *left_block = get_left_header(current_block);
+    header *right_block = get_right_header(current_block);
+
+    // Variables to track if coalescing occurred
+    bool coalesced_left = false, coalesced_right = false;
+
+    // Case 1: Coalesce with the left block if it is unallocated
+    if (get_state(left_block) == UNALLOCATED) {
+        coalesced_left = true;
+        size_t new_size = get_size(left_block) + get_size(current_block);
+        set_size(left_block, new_size);
+        current_block = left_block; // Update current block to the coalesced block
+    }
+    // Case 2: Coalesce with the right block if it is unallocated
+    if (get_state(right_block) == UNALLOCATED) {
+        coalesced_right = true;
+        size_t new_size = get_size(current_block) + get_size(right_block);
+        set_size(current_block, new_size);
+        // Update the free list to remove the right block
+        right_block->next->prev = right_block->prev;
+        right_block->prev->next = right_block->next;
+    }
+
+    // Update the left_size field of the right neighbor
+    header *right_neighbor = get_right_header(current_block);
+    if (get_state(right_neighbor) != FENCEPOST) {
+        right_neighbor->left_size = get_size(current_block);
+    }
+    // Determine where to insert the coalesced block into the free list
+    int new_list_idx = get_idx_freelist((get_size(current_block) - ALLOC_HEADER_SIZE) / 8 - 1);
+
+    // Handle the case for the last free list (N_LISTS - 1)
+    if (new_list_idx == N_LISTS - 1 && !coalesced_left && !coalesced_right) {
+        // No coalescing; just insert the block directly
+        insert_block(current_block);
+    } else {
+   
+        insert_block(current_block);
+    }
 }
 
 /**
