@@ -239,9 +239,8 @@ static header * allocate_new_chunk(size_t size){
         right_fencepost->left_size = newSize;
         
         //dropping the block
-        leftHeader->next->prev = leftHeader->prev;
-        printf(" here2\n");
-        leftHeader->prev->next = leftHeader->next;
+        //leftHeader->next->prev = leftHeader->prev;
+        //leftHeader->prev->next = leftHeader->next;
         //readd it
         insert_block(leftHeader);
         
