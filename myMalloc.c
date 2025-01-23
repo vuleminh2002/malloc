@@ -347,9 +347,7 @@ static inline header * allocate_object(size_t raw_size) {
       //printf("here\n");
       allocate_object(raw_size);  
     }
-    else{
-      return;
-    }
+    
     
   }
 
@@ -398,6 +396,7 @@ static inline header * allocate_object(size_t raw_size) {
       return (header*)allocated_block->data;
   }
 }
+return NULL;
 }
 
 /**
