@@ -294,7 +294,7 @@ static inline header * allocate_object(size_t raw_size) {
   size_t required_size = require_block_size(raw_size);
   int ind = ((required_size-ALLOC_HEADER_SIZE)/8)-1;
   int idx = get_idx_freelist(ind);
-          fprintf(stderr, "Memory allocation faisdffled\n");
+          
 
   header * block = NULL;
   //step 2: find appropriate free list
@@ -302,6 +302,7 @@ static inline header * allocate_object(size_t raw_size) {
     header * sentinal = &freelistSentinels[i];
     //if the final list
     if (i == N_LISTS - 1){
+            fprintf(stderr, "concac\n");
       for (header *cur = sentinal->next; cur != sentinal; cur = cur->next) {
         if (get_size(cur) >= required_size) {
             block = cur;
