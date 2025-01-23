@@ -239,8 +239,8 @@ static header * allocate_new_chunk(size_t size){
         right_fencepost->left_size = newSize;
         
         //dropping the block
-        //leftHeader->next->prev = leftHeader->prev;
-        //leftHeader->prev->next = leftHeader->next;
+        leftHeader->next->prev = leftHeader->prev;
+        leftHeader->prev->next = leftHeader->next;
         //readd it
         insert_block(leftHeader);
         
@@ -344,11 +344,11 @@ static inline header * allocate_object(size_t raw_size) {
   if (block == NULL) {
     header * newChunk = allocate_new_chunk(ARENA_SIZE);
     print_pointer(newChunk);
-    while(newChunk==NULL){
+    if(newChunk!=NULL){
       //printf("here\n");
-      newChunk = allocate_new_chunk(ARENA_SIZE);
+      allocate_object(raw_size);
     }
-    allocate_object(raw_size);  
+      
   }
 
 
