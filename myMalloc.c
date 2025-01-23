@@ -223,14 +223,12 @@ static header * allocate_new_chunk(size_t size){
     header * left_fencepost = get_header_from_offset(new_chunk, -ALLOC_HEADER_SIZE);
     header * right_fencepost = get_header_from_offset(new_chunk, sizeof(new_chunk));
     header * last_fencepost = get_header_from_offset(left_fencepost, -ALLOC_HEADER_SIZE);
-    printf("%s\n", "ditme");
+  
     //check if two chunks are adjacent
     if(last_fencepost == lastFencePost){
-      printf("%s\n", "ditme2");
       //case 1 if the previous block is unallocated
       header * leftHeader = get_left_header(lastFencePost);
       if(get_state(leftHeader) == UNALLOCATED){
-        printf("%s\n", "ditme3");
         size_t newSize = get_size(leftHeader) + get_size(new_chunk) + 2* ALLOC_HEADER_SIZE;
         set_size(leftHeader, newSize);
         set_state(leftHeader, UNALLOCATED);
@@ -357,6 +355,7 @@ static inline header * allocate_object(size_t raw_size) {
       block->prev->next = block->next;
       return (header*)block->data;
     }
+      printf("%s\n", "hello");
      // Case 2: Block is larger and needs to be split
      if (block_size > required_size) {
       // Update the current block's size
