@@ -484,7 +484,7 @@ static inline void deallocate_object(void * p) {
         return;
     } else {
         // Reinsert the block into the appropriate free list
-        insert_into_freelist(hdr);
+        insert_block(hdr);
     }
     
    
