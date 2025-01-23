@@ -344,7 +344,7 @@ static inline header * allocate_object(size_t raw_size) {
     header * newChunk = allocate_new_chunk(ARENA_SIZE);
     //print_pointer(newChunk);
     if(newChunk!=NULL){
-      //printf("here\n");
+      
       allocate_object(raw_size);  
     }
     
@@ -396,7 +396,6 @@ static inline header * allocate_object(size_t raw_size) {
       return (header*)allocated_block->data;
   }
 }
-return NULL;
 }
 
 /**
