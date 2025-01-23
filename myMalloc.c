@@ -192,7 +192,7 @@ static header * allocate_chunk(size_t size) {
 void insert_block(header * block){
   int idx = get_idx_freelist((get_size(block)-ALLOC_HEADER_SIZE/8)-1);
   printf("urrent size state%zu\n", block->size_state);
-  printf("at index %zu\n", idx);
+  printf("at index %d\n", idx);
   header * sentinal = &freelistSentinels[idx];
   //if the list is empty
   if(sentinal->next = sentinal){
