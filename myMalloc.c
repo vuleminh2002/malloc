@@ -294,7 +294,8 @@ static inline header * allocate_object(size_t raw_size) {
   size_t required_size = require_block_size(raw_size);
   int ind = ((required_size-ALLOC_HEADER_SIZE)/8)-1;
   int idx = get_idx_freelist(ind);
-  
+          fprintf(stderr, "Memory allocation faisdffled\n");
+
   header * block = NULL;
   //step 2: find appropriate free list
   for(int i = idx; i < N_LISTS; i++){
@@ -317,6 +318,8 @@ static inline header * allocate_object(size_t raw_size) {
   }
   //allocate a new chunk if block is null
   if (block == NULL) {
+            fprintf(stderr, "Memory allocation failed\n");
+
     if (allocate_new_chunk(ARENA_SIZE) == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
         exit(ENOMEM);
