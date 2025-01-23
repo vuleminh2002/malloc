@@ -230,8 +230,8 @@ static header * allocate_new_chunk(size_t size){
       printf(" ajacent chunks\n");
       //case 1 if the previous block is unallocated
       header * leftHeader = get_left_header(lastFencePost);
-      printf(" here\n");
       if(get_state(leftHeader) == UNALLOCATED){
+        printf(" here\n");
         size_t newSize = get_size(leftHeader) + get_size(new_chunk) + 2* ALLOC_HEADER_SIZE;
         set_size(leftHeader, newSize);
         set_state(leftHeader, UNALLOCATED);
