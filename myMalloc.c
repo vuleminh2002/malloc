@@ -190,19 +190,28 @@ static header * allocate_chunk(size_t size) {
 }
 
 void insert_block(header * block){
-  int idx = get_idx_freelist((get_size(block)-ALLOC_HEADER_SIZE/8)-1);
-  printf("urrent size state%zu\n", block->size_state);
-  printf("at index %d\n", idx);
-  header * sentinal = &freelistSentinels[idx];
-  //if the list is empty
-  if(sentinal->next = sentinal){
-    sentinal->prev = block;
-  }
-  sentinal->next->prev = block;
-  block->prev = sentinal;
-  block->next = sentinal->next;
-  sentinal->next = block;
+   if (!block) return; // NULL check to avoid segmentation faults
 
+    // Determine the appropriate free list index for the block
+    int idx = get_idx_freelist((get_size(block) - ALLOC_HEADER_SIZE) / 8 - 1);
+
+    // Get the sentinel node for the corresponding free list
+    header *sentinel = &freelistSentinels[idx];
+
+    // Insert the block at the beginning of the free list
+    if (sentinel->next == sentinel) {
+        // Free list is empty
+        sentinel->next = block;
+        sentinel->prev = block;
+        block->next = sentinel;
+        block->prev = sentinel;
+    } else {
+        // Free list is not empty
+        block->next = sentinel->next;
+        block->prev = sentinel;
+        sentinel->next->prev = block;
+        sentinel->next = block;
+    }
   }
   
 static header * allocate_new_chunk(size_t size){
