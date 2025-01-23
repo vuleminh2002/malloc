@@ -395,7 +395,7 @@ static inline void deallocate_object(void * p) {
         return; // Freeing NULL is a no-op
     }
 
-  
+  printf("Assertion sdfsdfFailed!\n");
     // Retrieve the block's header
     header *hdr = get_header_from_offset((char*)p, -ALLOC_HEADER_SIZE);
 if (get_state(hdr) == UNALLOCATED) {
