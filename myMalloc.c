@@ -342,7 +342,7 @@ static inline header * allocate_object(size_t raw_size) {
   //allocate a new chunk if block is null
   if (block == NULL) {
     header * newChunk = allocate_new_chunk(ARENA_SIZE);
-    print_pointer(newChunk);
+    //print_pointer(newChunk);
     if(newChunk!=NULL){
       //printf("here\n");
       allocate_object(raw_size);  
@@ -366,7 +366,6 @@ static inline header * allocate_object(size_t raw_size) {
       
      // Case 2: Block is larger and needs to be split
      if (block_size > required_size) {
-      printf("dmm\n");
       // Update the current block's size
       set_size(block, block_size - required_size);
       
