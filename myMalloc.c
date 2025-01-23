@@ -410,6 +410,7 @@ if (get_state(hdr) == UNALLOCATED) {
 
     // Case 1: Neither neighbor is free
     if (get_state(left_neighbor) == ALLOCATED && get_state(right_neighbor) == ALLOCATED) {
+      printf("Assertion Failed!\n");
         set_state(hdr, UNALLOCATED);
         insert_block(hdr);
     }
