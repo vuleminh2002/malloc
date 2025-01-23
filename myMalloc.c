@@ -53,9 +53,9 @@ static void init (void) __attribute__ ((constructor));
 //find the require block size for allocating a block
 static size_t require_block_size(size_t raw_size);
 //find the index on the freelist array
-int get_idx_freelist(int ind);
+static int get_idx_freelist(int ind);
 //find an appropriate block
-header * get_appropriate_block(header * sentinal, size_t require_size);
+static header * get_appropriate_block(header * sentinal, size_t require_size);
 //allocate a new chunk and coalesing
 static header * allocate_new_chunk(size_t size);
 //function to insert a block into a free list.
