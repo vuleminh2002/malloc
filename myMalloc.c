@@ -191,7 +191,7 @@ static header * allocate_chunk(size_t size) {
 
 void insert_block(header * block){
   int idx = get_idx_freelist((get_size(block)-ALLOC_HEADER_SIZE/8)-1);
-  printf("%zu\n", sizeof(block));
+  printf("%zu\n", block->size_state);
 
   header * sentinal = &freelistSentinels[idx];
   //if the list is empty
@@ -248,7 +248,7 @@ static header * allocate_new_chunk(size_t size){
       }
     }
     else{
-      printf("%s\n", "ditme4");
+      //printf("size of new chunk%zu\n", new_chunk->size_state);
          insert_block(new_chunk);
           lastFencePost = right_fencepost;
           return new_chunk;
