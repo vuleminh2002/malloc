@@ -219,6 +219,8 @@ static header * allocate_new_chunk(size_t size){
   header *new_chunk = allocate_chunk(size);
     if (new_chunk == NULL) {
       printf("failed allocation\n");
+        errno = ENOMEM;
+        perror("Memory allocation failed");
         return NULL; // Allocation failed
     }
     header * left_fencepost = get_header_from_offset(new_chunk, -ALLOC_HEADER_SIZE);
@@ -346,9 +348,9 @@ static inline header * allocate_object(size_t raw_size) {
     print_pointer(newChunk);
     if(newChunk!=NULL){
       //printf("here\n");
-      allocate_object(raw_size);
+      newChunk = allocate_new_chunk(ARENA_SIZE);
     }
-      
+    allocate_object(raw_size);  
   }
 
 
