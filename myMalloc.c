@@ -241,9 +241,9 @@ static header * allocate_new_chunk(size_t size){
         leftHeader->prev->next = leftHeader->next;
         //readd it
         insert_block(leftHeader);
+        printf(" here\n");
         lastFencePost = right_fencepost;
         return leftHeader;
-
       }
       if(get_state(leftHeader) == ALLOCATED){
         
