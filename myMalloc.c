@@ -255,7 +255,7 @@ static header * allocate_new_chunk(size_t size){
         right_fencepost->left_size = newSize;
         insert_block(newHeader);
         lastFencePost = right_fencepost;
-        printf(" here\n");
+        print_pointer(newHeader);
         return newHeader;
       }
     }
