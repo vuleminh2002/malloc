@@ -272,9 +272,7 @@ static header * get_appropriate_block(header * sentinal, size_t required_size){
   header * current = sentinal->next;
   while(current != sentinal){
     if(get_size(current) >= required_size){
-      printf("Found size_state: %zu\n", 
-                   current->size_state);
-
+     
       return current;
     }
     current = current->next;
@@ -309,7 +307,7 @@ static inline header * allocate_object(size_t raw_size) {
             
       for (header *cur = sentinal->next; cur != sentinal; cur = cur->next) {
         if (get_size(cur) >= required_size) {
-          fprintf(stderr, "conca");
+          
             block = cur;
               break;
         }
@@ -324,10 +322,10 @@ static inline header * allocate_object(size_t raw_size) {
   }
   //allocate a new chunk if block is null
   if (block == NULL) {
-            fprintf(stderr, "Memory allocation failed\n");
+            //fprintf(stderr, "Memory allocation failed\n");
 
     if (allocate_new_chunk(ARENA_SIZE) == NULL) {
-        fprintf(stderr, "Memory allocation failed\n");
+        //fprintf(stderr, "Memory allocation failed\n");
         exit(ENOMEM);
     }
     return allocate_object(raw_size);
