@@ -305,7 +305,7 @@ static inline header * allocate_object(size_t raw_size) {
             
       for (header *cur = sentinal->next; cur != sentinal; cur = cur->next) {
         if (get_size(cur) >= required_size) {
-          fprintf(stderr, "concac\n");
+          fprintf(stderr, "concacdd\n");
             block = cur;
               break;
         }
