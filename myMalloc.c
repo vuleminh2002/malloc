@@ -305,7 +305,7 @@ static inline header * allocate_object(size_t raw_size) {
             
       for (header *cur = sentinal->next; cur != sentinal; cur = cur->next) {
         if (get_size(cur) >= required_size) {
-          fprintf(stderr, "concacdd\n");
+          fprintf(stderr, "concac\n");
             block = cur;
               break;
         }
@@ -344,6 +344,7 @@ static inline header * allocate_object(size_t raw_size) {
      // Case 2: Block is larger and needs to be split
      if (block_size > required_size) {
       // Update the current block's size
+      fprintf(stderr, "concac2\n");
       set_size(block, block_size - required_size);
 
       // Create a new header for the allocated block
