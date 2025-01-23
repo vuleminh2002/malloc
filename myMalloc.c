@@ -247,7 +247,7 @@ static header * allocate_new_chunk(size_t size){
       }
     }
     else{
-         insert_freelist(new_chunk);
+         insert_block(new_chunk);
           lastFencePost = right_fencepost;
           return new_chunk;
 
@@ -362,7 +362,7 @@ static inline header * allocate_object(size_t raw_size) {
         block->next->prev = block->prev;
         block->prev->next = block->next;
 
-        insert_freelist(block);
+      insert_block(block);
       }
   }
 }
