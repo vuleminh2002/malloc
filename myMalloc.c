@@ -232,7 +232,7 @@ static header * allocate_new_chunk(size_t size){
 
       }
       if(get_state(leftHeader) == ALLOCATED){
-        print("concac\n");
+         printf("%s\n", "ditme");
         //case 2 if the previous block is allocated
         header * newHeader = last_fencepost;
         size_t newSize = get_size(new_chunk) + (2 * ALLOC_HEADER_SIZE);
