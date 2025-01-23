@@ -272,6 +272,8 @@ static header * get_appropriate_block(header * sentinal, size_t required_size){
   header * current = sentinal->next;
   while(current != sentinal){
     if(get_size(current) >= required_size){
+      printf("Address: %p\n", (void *)current);
+
       return current;
     }
     current = current->next;
