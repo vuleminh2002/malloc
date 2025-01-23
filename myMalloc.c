@@ -272,8 +272,8 @@ static header * get_appropriate_block(header * sentinal, size_t required_size){
   header * current = sentinal->next;
   while(current != sentinal){
     if(get_size(current) >= required_size){
-      printf("Found suitable block at address: %p, size_state: %zu\n", 
-                   (void *)current, current->size_state);
+      printf("Found size_state: %zu\n", 
+                   current->size_state);
 
       return current;
     }
@@ -308,7 +308,7 @@ static inline header * allocate_object(size_t raw_size) {
             
       for (header *cur = sentinal->next; cur != sentinal; cur = cur->next) {
         if (get_size(cur) >= required_size) {
-          fprintf(stderr, "concac\n");
+          fprintf(stderr, "conca");
             block = cur;
               break;
         }
@@ -347,9 +347,9 @@ static inline header * allocate_object(size_t raw_size) {
      // Case 2: Block is larger and needs to be split
      if (block_size > required_size) {
       // Update the current block's size
-      fprintf(stderr, "concac2\n");
       set_size(block, block_size - required_size);
-
+      printf("size_statsse: %zu\n", 
+                   block->size_state);
       // Create a new header for the allocated block
       char *new_pointer = (char *)block + get_size(block);
       header *allocated_block = (header *)new_pointer;
