@@ -191,25 +191,19 @@ static header * allocate_chunk(size_t size) {
 
 void insert_block(header * block){
   int idx = get_idx_freelist((get_size(block)-ALLOC_HEADER_SIZE/8)-1);
-  if(idx>N_LISTS-1){
-    idx = N_LISTS-1;
-  }
+  
   header * sentinal = &freelistSentinels[idx];
   //if the list is empty
   if(sentinal->next = sentinal){
-    sentinal->next = block;
     sentinal->prev = block;
-    block->prev = sentinal;
-    block->next = sentinal; 
-  }else{
-    sentinal->next->prev = block;
-    block->next = sentinal->next;
-    block->prev = sentinal;
-    sentinal->next = block;
+  }
+  sentinal->next->prev = block;
+  block->prev = sentinal;
+  block->next = sentinal->next;
+  sentinal->next = block;
 
   }
   
-}
 static header * allocate_new_chunk(size_t size){
   header *new_chunk = allocate_chunk(size);
     if (new_chunk == NULL) {
@@ -395,9 +389,8 @@ static inline void deallocate_object(void * p) {
         return; // Freeing NULL is a no-op
     }
 
-  printf("Assertion sdfsdfFailed!\n");
     // Retrieve the block's header
-    header *hdr = get_header_from_offset((char*)p, -ALLOC_HEADER_SIZE);
+    header * hdr = get_header_from_offset((char*)p, -ALLOC_HEADER_SIZE);
 
     // Get left and right neighbors
     header *left_neighbor = get_left_header(hdr);
