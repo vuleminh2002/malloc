@@ -235,8 +235,8 @@ static header * allocate_new_chunk(size_t size){
         size_t newSize = get_size(leftHeader) + get_size(new_chunk) + 2* ALLOC_HEADER_SIZE;
         set_size(leftHeader, newSize);
         set_state(leftHeader, UNALLOCATED);
+        print_pointer(leftHeader);
         right_fencepost->left_size = newSize;
-        
         //dropping the block
         leftHeader->next->prev = leftHeader->prev;
         leftHeader->prev->next = leftHeader->next;
