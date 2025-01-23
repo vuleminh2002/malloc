@@ -432,17 +432,18 @@ static inline void deallocate_object(void * p) {
   // TODO implement deallocation
   if (p == NULL) {
         return; // Freeing NULL is a no-op
-    }
-
-    
+  }
 
     // Retrieve the block's header
-    header * hdr = get_header_from_offset((char*)p, -ALLOC_HEADER_SIZE);
-    if (get_state(hdr) == UNALLOCATED) {
-    fprintf(stderr, "Double Free Detected\n");
-    assert(false);
-    exit(1);
-  }
+  header * hdr = ptr_to_header(p);   
+
+    //check for double free
+	if (get_state(hdr) == UNALLOCATED) {
+		printf("Double Free Detected\n");
+		printf("Assertion Failed!\n");
+		assert(true);
+		exit(1);
+	}
   set_state(hdr, UNALLOCATED);
     // Get left and right neighbors
     header *left_neighbor = get_left_header(hdr);
