@@ -321,14 +321,11 @@ static inline header * allocate_object(size_t raw_size) {
   }
   //allocate a new chunk if block is null
   if (block == NULL) {
-      
-
-    if (allocate_new_chunk(ARENA_SIZE) == NULL) {
-        exit(ENOMEM);
+    while(allocate_new_chunk(ARENA_SIZE)==NULL){
+      allocate_new_chunk(ARENA_SIZE);
     }
-    fprintf(stderr, "ditme\n");
-    return allocate_object(raw_size);
-}
+    allocate_object(raw_size);  
+  }
 
 
   //step 3: allocating
