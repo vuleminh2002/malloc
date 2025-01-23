@@ -191,6 +191,9 @@ static header * allocate_chunk(size_t size) {
 
 void insert_block(header * block){
   int idx = get_idx_freelist((get_size(block)-ALLOC_HEADER_SIZE/8)-1);
+  if(idx>N_LISTS-1){
+    idx = N_LISTS-1;
+  }
   header * sentinal = &freelistSentinels[idx];
   //if the list is empty
   if(sentinal->next = sentinal){
@@ -392,8 +395,14 @@ static inline void deallocate_object(void * p) {
         return; // Freeing NULL is a no-op
     }
 
+  if (get_state(currHeader) == UNALLOCATED) {
+		  printf("Double Free Detected\n");
+		  printf("Assertion Failed!\n");
+		  assert(true);
+		  exit(1);
+	  }
     // Retrieve the block's header
-    header *hdr = ptr_to_header(p);
+    header *hdr = get_header_from_offset((char*)p, -ALLOC_HEADER_SIZE);
 
     // Get left and right neighbors
     header *left_neighbor = get_left_header(hdr);
@@ -407,13 +416,19 @@ static inline void deallocate_object(void * p) {
     
     // Case 3: Only the left neighbor is free
     else if (get_state(left_neighbor) == UNALLOCATED && get_state(right_neighbor) == ALLOCATED) {
-        size_t new_size = get_size(left_neighbor) + get_size(hdr);
-        set_size(left_neighbor, new_size);
-        set_state(left_neighbor, UNALLOCATED);
-        right_neighbor->left_size = new_size;
-        left_neighbor->next->prev = left_neighbor->prev;
-        left_neighbor->prev->next = left_neighbor->next;
-        insert_block(left_neighbor);
+        int new_list_idx = get_idx_freelist((get_size(hdr) - ALLOC_HEADER_SIZE) / 8 - 1);
+        if (new_list_idx == N_LISTS - 1) {
+        // No coalescing; just insert the block directly
+          set_size(left_neighbor, get_size(hdr) + get_size(left_neighbor));
+        }
+        else{
+          set_state(hdr, UNALLOCATED);
+          set_size(left_neighbor, get_size(hdr) + get_size(left_neighbor));
+          left_neighbor->next->prev = left_neighbor->prev;
+          left_neighbor->prev->next = left_neighbor->next;
+          insert_block(left_neighbor);
+        }
+       
     }
     // Case 4: Both neighbors are free
    
