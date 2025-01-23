@@ -472,16 +472,22 @@ static inline void deallocate_object(void * p) {
     }//case 3: coalesce with the right neighbor only
     else if (!left_unallocated && right_unallocated){
       size_t newSize = get_size(hdr) + get_size(right_neighbor);
-      if(!final_freelist(hdr)){
-        remove_from_freelist(hdr);
+      if(!final_freelist(right_neighbor)){
+        remove_from_freelist(right_neighbor);
       }
       set_size(hdr, newSize);
       get_right_header(right_neighbor)->left_size = newSize;
     }
+    
     int idx = get_idx_freelist((get_size(hdr) - ALLOC_HEADER_SIZE) / 8 - 1);
     if (idx >= N_LISTS - 1) {
-        // If block belongs in the final free list, leave it as is
+      if(!left_neighbor && !right_neighbor){
+        insert_block(hdr);
+      }else{
         return;
+      }
+        // If block belongs in the final free list, leave it as is
+        
     } else {
         // Reinsert the block into the appropriate free list
         insert_block(hdr);
