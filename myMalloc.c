@@ -212,7 +212,7 @@ void insert_block(header * block){
         sentinel->next->prev = block;
         sentinel->next = block;
     }
-    print_pointer(block);
+    
   }
   
 static header * allocate_new_chunk(size_t size){
@@ -259,7 +259,8 @@ static header * allocate_new_chunk(size_t size){
     }
     else{
       //printf("size of new chunk%zu\n", new_chunk->size_state);
-         insert_block(new_chunk);
+          insert_block(new_chunk);
+          print_pointer(new_chunk);
           lastFencePost = right_fencepost;
           insert_os_chunk(left_fencepost);
           return new_chunk;
