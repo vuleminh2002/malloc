@@ -179,7 +179,7 @@ inline static void insert_fenceposts(void * raw_mem, size_t size) {
  * first fencpost)
  */
 static header * allocate_chunk(size_t size) {
-  printf("%s\n", "ditme\n");
+  //printf("%s\n", "ditme\n");
   void * mem = sbrk(size);
   insert_fenceposts(mem, size);
   header * hdr = (header *) ((char *)mem + ALLOC_HEADER_SIZE);
@@ -335,8 +335,11 @@ static inline header * allocate_object(size_t raw_size) {
   }
   //allocate a new chunk if block is null
   if (block == NULL) {
+    printf("%d\n",1);
     header * newChunk = allocate_new_chunk(ARENA_SIZE);
     while(newChunk==NULL){
+          printf("%d\n",2);
+
       newChunk = allocate_new_chunk(ARENA_SIZE);
     }
     allocate_object(raw_size);  
