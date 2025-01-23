@@ -345,12 +345,14 @@ static inline header * allocate_object(size_t raw_size) {
   //allocate a new chunk if block is null
   if (block == NULL) {
     header * newChunk = allocate_new_chunk(ARENA_SIZE);
-    print_pointer(newChunk);
     if(newChunk!=NULL){
       //printf("here\n");
-      newChunk = allocate_new_chunk(ARENA_SIZE);
+      allocate_object(raw_size); 
+    }else{
+      block = NULL;
+      return;
     }
-    allocate_object(raw_size);  
+     
   }
 
 
