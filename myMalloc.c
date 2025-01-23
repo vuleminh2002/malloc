@@ -439,10 +439,11 @@ static inline void deallocate_object(void * p) {
     // Retrieve the block's header
     header * hdr = get_header_from_offset((char*)p, -ALLOC_HEADER_SIZE);
     if (get_state(hdr) == UNALLOCATED) {
-        fprintf(stderr, "Double Free Detected\n");
-        assert(false);
-        return;
-    }
+    fprintf(stderr, "Double Free Detected\n");
+    assert(false);
+    exit(1);
+  }
+  set_state(hdr, UNALLOCATED);
     // Get left and right neighbors
     header *left_neighbor = get_left_header(hdr);
     header *right_neighbor = get_right_header(hdr);
@@ -488,7 +489,6 @@ static inline void deallocate_object(void * p) {
     int idx = get_idx_freelist((get_size(hdr) - ALLOC_HEADER_SIZE) / 8 - 1);
     if (idx >= N_LISTS - 1) {
       if(!left_neighbor && !right_neighbor){
-        set_state(hdr, UNALLOCATED);
         insert_block(hdr);
       }else{
         return;
@@ -497,7 +497,6 @@ static inline void deallocate_object(void * p) {
         
     } else {
         // Reinsert the block into the appropriate free list
-        set_state(hdr, UNALLOCATED);
         insert_block(hdr);
     }
     
