@@ -1,6 +1,3 @@
-CC = gcc
-CFLAGS = -g -std=gnu11 -Wall -Wextra
-LDFLAGS =
 
 .PHONY: all
 all: git-commit tests examples

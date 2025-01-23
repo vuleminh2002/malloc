@@ -217,7 +217,6 @@ void insert_block(header * block){
   
 static header * allocate_new_chunk(size_t size){
   header *new_chunk = allocate_chunk(size);
-  print_pointer(new_chunk);
     if (new_chunk == NULL) {
         return NULL; // Allocation failed
     }
