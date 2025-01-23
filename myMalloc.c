@@ -295,6 +295,8 @@ static inline header * allocate_object(size_t raw_size) {
     return NULL;
   }
   size_t required_size = require_block_size(raw_size);
+  printf("require_size: %zu\n", 
+                   block->size_state);
   int ind = ((required_size-ALLOC_HEADER_SIZE)/8)-1;
   int idx = get_idx_freelist(ind);
           
@@ -351,8 +353,7 @@ printf("blocksize: %zu\n",
       set_size(block, block_size - required_size);
       printf("size_statsse: %zu\n", 
                    block->size_state);
-                   printf("require_size: %zu\n", 
-                   block->size_state);
+                   
       // Create a new header for the allocated block
       char *new_pointer = (char *)block + get_size(block);
       header *allocated_block = (header *)new_pointer;
