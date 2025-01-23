@@ -412,7 +412,7 @@ static inline void deallocate_object(void * p) {
         set_state(left_neighbor, UNALLOCATED);
         right_neighbor->left_size = new_size;
         left_neighbor->next->prev = left_neighbor->prev;
-        left_neighbor->prev->next = left_neighbor->next
+        left_neighbor->prev->next = left_neighbor->next;
         insert_block(left_neighbor);
     }
     // Case 4: Both neighbors are free
