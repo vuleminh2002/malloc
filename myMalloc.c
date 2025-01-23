@@ -337,7 +337,8 @@ static inline header * allocate_object(size_t raw_size) {
   if(block!= NULL){
     //if the block size is equal the required size
       size_t block_size = get_size(block);
-
+printf("blocksize: %zu\n", 
+                 block_size);
     if(required_size == block_size || block_size - required_size < sizeof(header)){
       set_state(block, ALLOCATED);
       block->next->prev = block->prev;
