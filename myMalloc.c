@@ -482,6 +482,7 @@ static inline void deallocate_object(void * p) {
     int idx = get_idx_freelist((get_size(hdr) - ALLOC_HEADER_SIZE) / 8 - 1);
     if (idx >= N_LISTS - 1) {
       if(!left_neighbor && !right_neighbor){
+        set_state(hdr, UNALLOCATED);
         insert_block(hdr);
       }else{
         return;
@@ -490,6 +491,7 @@ static inline void deallocate_object(void * p) {
         
     } else {
         // Reinsert the block into the appropriate free list
+        set_state(hdr, UNALLOCATED);
         insert_block(hdr);
     }
     
