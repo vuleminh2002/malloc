@@ -246,7 +246,7 @@ static header * allocate_new_chunk(size_t size){
 
       }
       if(get_state(leftHeader) == ALLOCATED){
-         
+        
         //case 2 if the previous block is allocated
         header * newHeader = last_fencepost;
         size_t newSize = get_size(new_chunk) + (2 * ALLOC_HEADER_SIZE);
@@ -255,6 +255,7 @@ static header * allocate_new_chunk(size_t size){
         right_fencepost->left_size = newSize;
         insert_block(newHeader);
         lastFencePost = right_fencepost;
+        printf(" here\n");
         return newHeader;
       }
     }
