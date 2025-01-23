@@ -398,12 +398,7 @@ static inline void deallocate_object(void * p) {
   printf("Assertion sdfsdfFailed!\n");
     // Retrieve the block's header
     header *hdr = get_header_from_offset((char*)p, -ALLOC_HEADER_SIZE);
-if (get_state(hdr) == UNALLOCATED) {
-		  printf("Double Free Detected\n");
-		  printf("Assertion Failed!\n");
-		  assert(true);
-		  exit(1);
-	  }
+
     // Get left and right neighbors
     header *left_neighbor = get_left_header(hdr);
     header *right_neighbor = get_right_header(hdr);
