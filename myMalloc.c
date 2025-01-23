@@ -321,10 +321,10 @@ static inline header * allocate_object(size_t raw_size) {
   }
   //allocate a new chunk if block is null
   if (block == NULL) {
-      fprintf(stderr, "ditme\n");
+      
 
     if (allocate_new_chunk(ARENA_SIZE) == NULL) {
-        //fprintf(stderr, "Memory allocation failed\n");
+        fprintf(stderr, "ditme\n");
         exit(ENOMEM);
     }
     return allocate_object(raw_size);
