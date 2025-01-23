@@ -395,15 +395,15 @@ static inline void deallocate_object(void * p) {
         return; // Freeing NULL is a no-op
     }
 
-  if (get_state(currHeader) == UNALLOCATED) {
+  
+    // Retrieve the block's header
+    header *hdr = get_header_from_offset((char*)p, -ALLOC_HEADER_SIZE);
+if (get_state(hdr) == UNALLOCATED) {
 		  printf("Double Free Detected\n");
 		  printf("Assertion Failed!\n");
 		  assert(true);
 		  exit(1);
 	  }
-    // Retrieve the block's header
-    header *hdr = get_header_from_offset((char*)p, -ALLOC_HEADER_SIZE);
-
     // Get left and right neighbors
     header *left_neighbor = get_left_header(hdr);
     header *right_neighbor = get_right_header(hdr);
