@@ -302,9 +302,10 @@ static inline header * allocate_object(size_t raw_size) {
     header * sentinal = &freelistSentinels[i];
     //if the final list
     if (i == N_LISTS - 1){
-            fprintf(stderr, "concac\n");
+            
       for (header *cur = sentinal->next; cur != sentinal; cur = cur->next) {
         if (get_size(cur) >= required_size) {
+          fprintf(stderr, "concac\n");
             block = cur;
               break;
         }
