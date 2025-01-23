@@ -247,6 +247,7 @@ static header * allocate_new_chunk(size_t size){
       }
     }
     else{
+      printf("%s\n", "ditme4");
          insert_block(new_chunk);
           lastFencePost = right_fencepost;
           return new_chunk;
