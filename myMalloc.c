@@ -218,36 +218,32 @@ void insert_block(header * block){
 static header * allocate_new_chunk(size_t size){
   header *new_chunk = allocate_chunk(size);
     if (new_chunk == NULL) {
-      
-        errno = ENOMEM;
-
         return NULL; // Allocation failed
     }
     header * left_fencepost = get_header_from_offset(new_chunk, -ALLOC_HEADER_SIZE);
     header * right_fencepost = get_header_from_offset(new_chunk, sizeof(new_chunk));
     header * last_fencepost = get_header_from_offset(left_fencepost, -ALLOC_HEADER_SIZE);
+  
     //check if two chunks are adjacent
     if(last_fencepost == lastFencePost){
       //case 1 if the previous block is unallocated
       header * leftHeader = get_left_header(lastFencePost);
       if(get_state(leftHeader) == UNALLOCATED){
-      
         size_t newSize = get_size(leftHeader) + get_size(new_chunk) + 2* ALLOC_HEADER_SIZE;
         set_size(leftHeader, newSize);
         set_state(leftHeader, UNALLOCATED);
-        print_pointer(leftHeader);
         right_fencepost->left_size = newSize;
         //dropping the block
         leftHeader->next->prev = leftHeader->prev;
         leftHeader->prev->next = leftHeader->next;
         //readd it
         insert_block(leftHeader);
-        
         lastFencePost = right_fencepost;
         return leftHeader;
+
       }
       if(get_state(leftHeader) == ALLOCATED){
-        
+         
         //case 2 if the previous block is allocated
         header * newHeader = last_fencepost;
         size_t newSize = get_size(new_chunk) + (2 * ALLOC_HEADER_SIZE);
@@ -256,7 +252,6 @@ static header * allocate_new_chunk(size_t size){
         right_fencepost->left_size = newSize;
         insert_block(newHeader);
         lastFencePost = right_fencepost;
-        print_pointer(newHeader);
         return newHeader;
       }
     }
@@ -343,12 +338,10 @@ static inline header * allocate_object(size_t raw_size) {
   if (block == NULL) {
     header * newChunk = allocate_new_chunk(ARENA_SIZE);
     //print_pointer(newChunk);
-    if(newChunk!=NULL){
-      
-      allocate_object(raw_size);  
+    while(newChunk==NULL){
+      newChunk = allocate_new_chunk(ARENA_SIZE);
     }
-    
-    
+    allocate_object(raw_size);  
   }
 
 
