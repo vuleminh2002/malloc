@@ -51,7 +51,7 @@ static void init (void) __attribute__ ((constructor));
 
 //Extra helper function
 //find the require block size for allocating a block
-size_t require_block_size(size_t raw_size);
+static size_t require_block_size(size_t raw_size);
 //find the index on the freelist array
 int get_idx_freelist(int ind);
 //find an appropriate block
