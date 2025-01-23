@@ -258,7 +258,6 @@ static header * allocate_new_chunk(size_t size){
     else{
       //printf("size of new chunk%zu\n", new_chunk->size_state);
           insert_block(new_chunk);
-          print_pointer(new_chunk);
           lastFencePost = right_fencepost;
           insert_os_chunk(left_fencepost);
           return new_chunk;
