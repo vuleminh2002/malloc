@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "*.tcc": "c",
+        "array": "c",
+        "deque": "c",
+        "list": "c",
+        "string": "c",
+        "vector": "c",
+        "iterator": "c",
+        "string_view": "c",
+        "memory_resource": "c"
+    }
+}

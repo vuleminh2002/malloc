@@ -1,0 +1,6 @@
+[31mTEST: test_double_free FAILED 0[0m
+40c40
+< test_double_free: ../myMalloc.c:444: deallocate_object: Assertion `false' failed.
+---
+> test_double_free: ../myMalloc.c:577: deallocate_object: Assertion `false' failed.
+

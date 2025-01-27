@@ -1,0 +1,43 @@
+[31mTEST: test_coalesce_chunk_insert FAILED 0[0m
+38c38
+< 139280[F][A][F][F][U][A][F]
+---
+> [F][A][U][A][F]
+43,45c43,45
+< 	addr: 139280
+< 	size: 960
+< 	left_size: 16
+---
+> 	addr: 1008
+> 	size: 992
+> 	left_size: 992
+66c66
+< 	size: 16
+---
+> 	size: 992
+68,79d67
+< 	allocated: fencepost
+< ]
+< [
+< 	addr: 139264
+< 	size: 16
+< 	left_size: 16
+< 	allocated: fencepost
+< ]
+< [
+< 	addr: 139280
+< 	size: 960
+< 	left_size: 16
+85c73
+< 	addr: 140240
+---
+> 	addr: 2000
+87c75
+< 	left_size: 960
+---
+> 	left_size: 992
+91c79
+< 	addr: 140272
+---
+> 	addr: 2032
+
