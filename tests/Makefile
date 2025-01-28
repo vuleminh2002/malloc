@@ -1,6 +1,6 @@
 CC = gcc
 #CFLAGS = -std=gnu11 -Wall -Wextra -I..
-CFLAGS = -std=gnu11 -I.. -DDEBUG
+CFLAGS = -std=gnu11 -I.. -DDEBUG -g
 LDFLAGS = -lpthread
 TEST_SRC_DIR = ./testsrc
 TEST_BIN_DIR = .
