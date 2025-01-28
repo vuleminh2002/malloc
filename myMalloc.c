@@ -226,24 +226,23 @@ static header * allocate_new_chunk(size_t size){
     if (new_chunk == NULL) {
         return NULL; // Allocation failed
     }
-     header * left_fencepost  = (header *)((char *)new_chunk - ALLOC_HEADER_SIZE);
+    header * left_fencepost = get_header_from_offset(new_chunk, -ALLOC_HEADER_SIZE);
     header * right_fencepost = get_right_header(new_chunk);
 
     header * last_fencepost = get_header_from_offset(left_fencepost, -ALLOC_HEADER_SIZE);
   
     //check if two chunks are adjacent
-    if(last_fencepost == left_fencepost){
+    if(last_fencepost == lastFencePost){
       //case 1 if the previous block is unallocated
       header * leftHeader = get_left_header(lastFencePost);
       if(get_state(leftHeader) == UNALLOCATED){
-         leftHeader->prev->next = leftHeader->next;
-            leftHeader->next->prev = leftHeader->prev;
         size_t newSize = get_size(leftHeader) + get_size(new_chunk) + 2* ALLOC_HEADER_SIZE;
         set_size(leftHeader, newSize);
         set_state(leftHeader, UNALLOCATED);
         right_fencepost->left_size = newSize;
         //dropping the block
-      
+        leftHeader->next->prev = leftHeader->prev;
+        leftHeader->prev->next = leftHeader->next;
         //readd it
         insert_block(leftHeader);
         lastFencePost = right_fencepost;
