@@ -229,7 +229,7 @@ static header * allocate_new_chunk(size_t size){
     header * left_fencepost = get_header_from_offset(new_chunk, -ALLOC_HEADER_SIZE);
     header * right_fencepost = get_right_header(new_chunk);
 
-    header * last_fencepost = get_header_from_offset(left_fencepost, -ALLOC_HEADER_SIZE);
+    header * last_fencepost = get_left_header(left_fencepost);
   
     //check if two chunks are adjacent
     if(last_fencepost == lastFencePost){
