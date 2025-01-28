@@ -181,6 +181,12 @@ inline static void insert_fenceposts(void * raw_mem, size_t size) {
 static header * allocate_chunk(size_t size) {
   //printf("%s\n", "hello\n");
   void * mem = sbrk(size);
+
+  if (mem == (void *) -1) {
+        errno = ENOMEM;      // Throw "out of memory" error
+        return NULL;         // Return NULL to indicate failure
+    }
+
   insert_fenceposts(mem, size);
   header * hdr = (header *) ((char *)mem + ALLOC_HEADER_SIZE);
   set_state(hdr, UNALLOCATED);
@@ -218,10 +224,12 @@ void insert_block(header * block){
 static header * allocate_new_chunk(size_t size){
   header *new_chunk = allocate_chunk(size);
     if (new_chunk == NULL) {
+        errno
         return NULL; // Allocation failed
     }
     header * left_fencepost = get_header_from_offset(new_chunk, -ALLOC_HEADER_SIZE);
-    header * right_fencepost = get_header_from_offset(new_chunk, sizeof(new_chunk));
+    header * right_fencepost = get_right_header(new_chunk);
+
     header * last_fencepost = get_header_from_offset(left_fencepost, -ALLOC_HEADER_SIZE);
   
     //check if two chunks are adjacent
@@ -327,22 +335,23 @@ static inline header * allocate_object(size_t raw_size) {
       }
     }
     //if not the final list 
-    if(sentinal->next != sentinal){
+    else if(sentinal->next != sentinal){
       block = get_appropriate_block(sentinal ,required_size);
-      if(block != NULL){
+    }
+    if(block != NULL){
         break;
       }
-    }
   }
   //allocate a new chunk if block is null
-  if (block == NULL) {
-    header * newChunk = allocate_new_chunk(ARENA_SIZE);
-    //print_pointer(newChunk);
-    while(newChunk==NULL){
-      newChunk = allocate_new_chunk(ARENA_SIZE);
+   if (block == NULL) {
+        header * newChunk = allocate_new_chunk(ARENA_SIZE);
+        if (newChunk == NULL) {
+            // sbrk() failed -> errno is ENOMEM
+            return NULL;  
+        }
+        // Now that we have a new chunk, run allocate_object() again:
+        return allocate_object(raw_size);
     }
-    allocate_object(raw_size);  
-  }
 
 
   //step 3: allocating
@@ -417,7 +426,8 @@ static inline bool final_freelist(header * header){
  * helper function to remove a block from the freelist
  */
 static inline void remove_from_freelist(header * hdr) {
-  int idx = (get_size(hdr)-ALLOC_HEADER_SIZE)/sizeof(size_t)-1;
+  int idx = get_idx_freelist((get_size(block) - ALLOC_HEADER_SIZE) / 8 - 1);
+
   idx = idx > (N_LISTS-1)? N_LISTS-1 : idx;
 
   header * sentinal = &freelistSentinels[idx];
