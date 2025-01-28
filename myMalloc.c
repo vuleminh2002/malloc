@@ -224,7 +224,6 @@ void insert_block(header * block){
 static header * allocate_new_chunk(size_t size){
   header *new_chunk = allocate_chunk(size);
     if (new_chunk == NULL) {
-        errno
         return NULL; // Allocation failed
     }
     header * left_fencepost = get_header_from_offset(new_chunk, -ALLOC_HEADER_SIZE);
