@@ -425,7 +425,7 @@ static inline bool final_freelist(header * header){
  * helper function to remove a block from the freelist
  */
 static inline void remove_from_freelist(header * hdr) {
-  int idx = get_idx_freelist((get_size(block) - ALLOC_HEADER_SIZE) / 8 - 1);
+  int idx = get_idx_freelist((get_size(hdr) - ALLOC_HEADER_SIZE) / 8 - 1);
 
   idx = idx > (N_LISTS-1)? N_LISTS-1 : idx;
 
