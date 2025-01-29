@@ -349,7 +349,7 @@ static inline header * allocate_object(size_t raw_size) {
             // sbrk() failed -> errno is ENOMEM
             return NULL;  
         }
-        // Now that we have a new chunk, run allocate_object() again:
+        //run allocate_object() again:
         return allocate_object(raw_size);
     }
 
