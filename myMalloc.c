@@ -247,16 +247,16 @@ static header * allocate_new_chunk(size_t size){
             set_size(leftHeader, mergedSize);
             set_state(leftHeader, UNALLOCATED);
 
-            rightFencePost->left_size = mergedSize;
+            right_fencepost->left_size = mergedSize;
             insert_block(leftHeader);
 
             // Update the global lastFencePost
-            lastFencePost = rightFencePost;
+            lastFencePost = right_fencepost;
             return leftHeader;
         } else {
             // If the left neighbor is allocated or fencepost, can't coalesce
             insert_block(new_chunk);
-            lastFencePost = rightFencePost;
+            lastFencePost = right_fencepost;
             return new_chunk;
         }
         /*
