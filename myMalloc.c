@@ -399,7 +399,9 @@ static inline header * allocate_object(size_t raw_size) {
   }
 }
 }
-
+void * to_absolute(void * relative) {
+    return (char*)base + (ptrdiff_t)relative;
+}
 /**
  * @brief Helper to get the header from a pointer allocated with malloc
  *
@@ -408,9 +410,11 @@ static inline header * allocate_object(size_t raw_size) {
  * @return A pointer to the header of the block
  */
 static inline header * ptr_to_header(void * p) {
-   p = (char*)base + (ptrdiff_t)p;
-
-  return (header *)((char *) p - ALLOC_HEADER_SIZE); //sizeof(header));
+  
+   if (RELATIVE_POINTERS) {
+        p = to_absolute(p);
+    }
+    return (header *)((char *)p - ALLOC_HEADER_SIZE);
 }
 /**
  * determine if the block is in the final freelist
