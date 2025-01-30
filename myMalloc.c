@@ -399,9 +399,7 @@ static inline header * allocate_object(size_t raw_size) {
   }
 }
 }
-void * to_absolute(void * relative) {
-    return (char*)base + (ptrdiff_t)relative;
-}
+
 /**
  * @brief Helper to get the header from a pointer allocated with malloc
  *
@@ -411,9 +409,6 @@ void * to_absolute(void * relative) {
  */
 static inline header * ptr_to_header(void * p) {
   
-   if (RELATIVE_POINTERS) {
-        p = to_absolute(p);
-    }
     return (header *)((char *)p - ALLOC_HEADER_SIZE);
 }
 /**
