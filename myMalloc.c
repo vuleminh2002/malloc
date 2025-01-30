@@ -408,6 +408,8 @@ static inline header * allocate_object(size_t raw_size) {
  * @return A pointer to the header of the block
  */
 static inline header * ptr_to_header(void * p) {
+   p = (char*)base + (ptrdiff_t)p;
+
   return (header *)((char *) p - ALLOC_HEADER_SIZE); //sizeof(header));
 }
 /**
@@ -443,7 +445,7 @@ static inline void deallocate_object(void * p) {
   if (p == NULL) {
         return; // Freeing NULL is a no-op
   }
-  printf("%s\n", "got here");
+  
     // Retrieve the block's header
   header * hdr = ptr_to_header(p);   
 
