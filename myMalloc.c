@@ -236,6 +236,30 @@ static header * allocate_new_chunk(size_t size){
       //case 1 if the previous block is unallocated
       header * leftHeader = get_left_header(lastFencePost);
       if(get_state(leftHeader) == UNALLOCATED){
+        if (get_state(leftHeader) == UNALLOCATED) {
+            // Remove leftHeader from its free list so we can resize
+            leftHeader->prev->next = leftHeader->next;
+            leftHeader->next->prev = leftHeader->prev;
+
+            // Merge sizes
+            size_t mergedSize = get_size(leftHeader) + get_size(new_chunk)
+                                + 2 * ALLOC_HEADER_SIZE;
+            set_size(leftHeader, mergedSize);
+            set_state(leftHeader, UNALLOCATED);
+
+            rightFencePost->left_size = mergedSize;
+            insert_block(leftHeader);
+
+            // Update the global lastFencePost
+            lastFencePost = rightFencePost;
+            return leftHeader;
+        } else {
+            // If the left neighbor is allocated or fencepost, can't coalesce
+            insert_block(new_chunk);
+            lastFencePost = rightFencePost;
+            return new_chunk;
+        }
+        /*
         leftHeader->next->prev = leftHeader->prev;
         leftHeader->prev->next = leftHeader->next;
         size_t newSize = get_size(leftHeader) + get_size(new_chunk) + 2* ALLOC_HEADER_SIZE;
@@ -248,8 +272,9 @@ static header * allocate_new_chunk(size_t size){
         insert_block(leftHeader);
         lastFencePost = right_fencepost;
         return leftHeader;
-
+      */
       }
+      
       if(get_state(leftHeader) == ALLOCATED){
          
         //case 2 if the previous block is allocated
