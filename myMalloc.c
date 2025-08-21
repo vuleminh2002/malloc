@@ -318,7 +318,8 @@ static inline header * allocate_object(size_t raw_size) {
   size_t required_size = require_block_size(raw_size);
   
   int ind = ((required_size-ALLOC_HEADER_SIZE)/8)-1;
-  int idx = get_idx_freelist(ind);
+  int idx = get_idx_fre
+  elist(ind);
           
 
   header * block = NULL;
